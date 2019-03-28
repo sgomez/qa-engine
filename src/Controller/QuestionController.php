@@ -22,7 +22,6 @@ class QuestionController extends AbstractController
     {
         $questions = $questionRepository->findAll();
 
-        dump($questions);
 
         return $this->render('question/index.html.twig', [
             'questions' => $questions,
