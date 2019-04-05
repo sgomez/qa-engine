@@ -35,6 +35,12 @@ class Question
      */
     private $answers;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="questions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
@@ -97,6 +103,18 @@ class Question
                 $answer->setQuestion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

@@ -6,8 +6,9 @@ use App\Entity\Question;
 use App\Message\AddQuestionMessage;
 use App\Repository\QuestionRepository;
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddQuestionHandler
+class AddQuestionHandler implements MessageHandlerInterface
 {
     /**
      * @var ObjectManager
@@ -38,8 +39,7 @@ class AddQuestionHandler
 
         $question = new Question();
         $question->setDescription($message->getDescription());
-
-
+        $question->setCreatedBy($message->getUser());
 
         $this->manager->persist($question);
         $this->manager->flush();

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AnswerRepository")
@@ -29,8 +30,15 @@ class Answer
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Question", inversedBy="answers")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\Valid()
      */
     private $question;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="answers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $createdBy;
 
     public function __construct()
     {
@@ -74,6 +82,18 @@ class Answer
     public function setQuestion(?Question $question): self
     {
         $this->question = $question;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

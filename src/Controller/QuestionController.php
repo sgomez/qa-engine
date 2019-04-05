@@ -6,6 +6,8 @@ use App\Entity\Question;
 use App\Form\QuestionType;
 use App\Message\AddQuestionMessage;
 use App\Repository\QuestionRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,6 +44,7 @@ class QuestionController extends AbstractController
 
     /**
      * @Route("/new", name="question_new", methods={"GET","POST"})
+     * @IsGranted("ROLE_USER")
      */
     public function new(Request $request): Response
     {
@@ -52,8 +55,9 @@ class QuestionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $description = $question->getDescription();
+            $user = $this->getUser();
 
-            $message = new AddQuestionMessage($description);
+            $message = new AddQuestionMessage($description, $user);
 
             $this->bus->dispatch(
                 $message
@@ -83,6 +87,8 @@ class QuestionController extends AbstractController
      */
     public function edit(Request $request, Question $question): Response
     {
+        $this->denyAccessUnlessGranted('QUESTION_EDIT', $question);
+
         $form = $this->createForm(QuestionType::class, $question);
         $form->handleRequest($request);
 
@@ -105,6 +111,8 @@ class QuestionController extends AbstractController
      */
     public function delete(Request $request, Question $question): Response
     {
+        $this->denyAccessUnlessGranted('QUESTION_DELETE', $question);
+
         if ($this->isCsrfTokenValid('delete'.$question->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($question);
